@@ -2,7 +2,7 @@
 package main
 
 import (
-	"backend/api/controllers"
+	"devtipmebackend/api/controllers"
 	"log"
 	"os"
 

@@ -7,10 +7,10 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"backend/api/middlewares"
-	"backend/api/responses"
+	"devtipmebackend/api/middlewares"
+	"devtipmebackend/api/responses"
 
-	"backend/api/config"
+	"devtipmebackend/api/config"
 )
 
 type App struct {
@@ -31,7 +31,7 @@ func (a *App) initializeRoutes() {
 	a.Router.Use(middlewares.SetContentTypeMiddleware)
 
 	a.Router.HandleFunc("/", home).Methods("GET")
-	a.Router.HandleFunc("/getusers", a.GetUsers).Methods("GET")
+	a.Router.HandleFunc("/getusers", a.GetAllUsers).Methods("GET")
 	a.Router.HandleFunc("/saveuser", a.SaveUser).Methods("POST")
 	a.Router.HandleFunc("/deleteuser/{id}", a.DeleteUser).Methods("DELETE")
 	a.Router.HandleFunc("/updateuser/{id}", a.UpdateUser).Methods("PUT")

@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"backend/api/models"
-	"backend/api/responses"
+	"devtipmebackend/api/models"
+	"devtipmebackend/api/responses"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
+func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := models.GetUsers(a.MClient)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

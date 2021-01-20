@@ -18,11 +18,11 @@ import (
 
 // User model
 type User struct {
-	Email        string `json:"email"`
-	FirstName    string `json:"firstname"`
-	LastName     string `json:"lastname"`
-	Password     string `json:"password"`
-	ProfileImage string `json:"profileimage"`
+	Email        string `json:"email,omitempty" bson:"email,omitempty"`
+	FirstName    string `json:"firstname,omitempty" bson:"firstname,omitempty"`
+	LastName     string `json:"lastname,omitempty" bson:"lastname,omitempty"`
+	Password     string `json:"password,omitempty" bson:"password,omitempty"`
+	ProfileImage string `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
 }
 
 // HashPassword hashes password from user input
