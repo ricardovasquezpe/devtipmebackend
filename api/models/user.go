@@ -1,5 +1,3 @@
-// user.go
-
 package models
 
 import (
@@ -16,7 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// User model
 type User struct {
 	Email        string `json:"email,omitempty" bson:"email,omitempty"`
 	FirstName    string `json:"firstname,omitempty" bson:"firstname,omitempty"`
@@ -25,13 +22,11 @@ type User struct {
 	ProfileImage string `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
 }
 
-// HashPassword hashes password from user input
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14) // 14 is the cost for hashing the password.
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
-// CheckPasswordHash checks password hash and password from user input if they match
 func CheckPasswordHash(password, hash string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
@@ -40,7 +35,6 @@ func CheckPasswordHash(password, hash string) error {
 	return nil
 }
 
-// BeforeSave hashes user password
 func (u *User) BeforeSave() error {
 	password := strings.TrimSpace(u.Password)
 	hashedpassword, err := HashPassword(password)
@@ -51,7 +45,6 @@ func (u *User) BeforeSave() error {
 	return nil
 }
 
-// Prepare strips user input of any white spaces
 func (u *User) Prepare() {
 	u.Email = strings.TrimSpace(u.Email)
 	u.FirstName = strings.TrimSpace(u.FirstName)
@@ -59,7 +52,6 @@ func (u *User) Prepare() {
 	u.ProfileImage = strings.TrimSpace(u.ProfileImage)
 }
 
-// Validate user input
 func (u *User) Validate(action string) error {
 	switch strings.ToLower(action) {
 	case "login":
@@ -70,7 +62,7 @@ func (u *User) Validate(action string) error {
 			return errors.New("Password is required")
 		}
 		return nil
-	default: // this is for creating a user, where all fields are required
+	default:
 		if u.FirstName == "" {
 			return errors.New("FirstName is required")
 		}
@@ -92,7 +84,7 @@ func (u *User) Validate(action string) error {
 
 func GetUsers(database *mongo.Database) ([]User, error) {
 	var users []User = []User{}
-	collection := database.Collection("users1")
+	collection := database.Collection("users")
 	usr, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		return []User{}, err

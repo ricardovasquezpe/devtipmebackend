@@ -7,7 +7,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// EncodeAuthToken signs authentication token
 func EncodeAuthToken(uid uint) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["userID"] = uid
