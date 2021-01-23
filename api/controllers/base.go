@@ -1,21 +1,22 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 
+	"devtipmebackend/api/config"
 	"devtipmebackend/api/middlewares"
 	"devtipmebackend/api/responses"
-
-	"devtipmebackend/api/config"
 )
 
 type App struct {
 	Router  *mux.Router
 	MClient *mongo.Database
+	S3      config.S3
 }
 
 func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
@@ -25,6 +26,15 @@ func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
 	a.Router = mux.NewRouter()
 	a.setVersionApi("v1")
 	a.initializeRoutes()
+}
+
+func (a *App) InitializeS3Bucket(region, accessKeyId, accessKeySecret string) {
+	fmt.Println(region)
+	fmt.Println(accessKeyId)
+	fmt.Println(accessKeySecret)
+
+	a.S3 = config.NewS3(accessKeyId, accessKeySecret, region)
+	a.S3.ConnectAws()
 }
 
 func (a *App) initializeRoutes() {
@@ -37,6 +47,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/updateuser/{id}", a.UpdateUser).Methods("PUT")
 
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
+
+	a.Router.HandleFunc("/uploadfile", a.uploadFile).Methods("POST")
 }
 
 func (a *App) RunServer() {
