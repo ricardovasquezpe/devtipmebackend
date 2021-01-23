@@ -112,7 +112,12 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	resp["fileName"], _ = a.S3.UploadImage("devtipme", header.Filename, file)
+	resp["fileName"], err = a.S3.UploadImage("devtipme", header.Filename, file)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }
