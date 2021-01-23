@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -29,10 +28,6 @@ func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
 }
 
 func (a *App) InitializeS3Bucket(region, accessKeyId, accessKeySecret string) {
-	fmt.Println(region)
-	fmt.Println(accessKeyId)
-	fmt.Println(accessKeySecret)
-
 	a.S3 = config.NewS3(accessKeyId, accessKeySecret, region)
 	a.S3.ConnectAws()
 }
