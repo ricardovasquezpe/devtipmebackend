@@ -44,6 +44,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
 
 	a.Router.HandleFunc("/uploadfile", a.uploadFile).Methods("POST")
+
+	a.Router.HandleFunc("/savesolution", a.SaveSolution).Methods("POST")
 }
 
 func (a *App) RunServer() {
