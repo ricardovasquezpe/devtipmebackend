@@ -11,14 +11,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Solution struct {
-	ID         primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Title      string             `json:"title" bson:"title"`
-	RegisterAt time.Time          `json:"registerAt" bson:"registerAt"`
-	UpdatedAt  time.Time          `json:"updatedAt" bson:"updatedAt"`
-	Content    []Content          `json:"content" bson:"content"`
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Title     string             `json:"title" bson:"title"`
+	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`
+	Content   []Content          `json:"content" bson:"content"`
 }
 
 type Content struct {
@@ -28,7 +29,7 @@ type Content struct {
 
 func (s *Solution) Prepare() {
 	s.Title = strings.TrimSpace(s.Title)
-	s.RegisterAt = time.Now()
+	s.CreatedAt = time.Now()
 	s.UpdatedAt = time.Now()
 }
 
@@ -36,8 +37,8 @@ func (s *Solution) Validate() error {
 	if s.Title == "" {
 		return errors.New("Title is required")
 	}
-	if s.RegisterAt.IsZero() {
-		return errors.New("RegisterAt is required")
+	if s.CreatedAt.IsZero() {
+		return errors.New("CreatedAt is required")
 	}
 	if s.UpdatedAt.IsZero() {
 		return errors.New("UpdatedAt is required")
@@ -89,6 +90,35 @@ func GetAllSolutions(database *mongo.Database) ([]Solution, error) {
 	var solutions []Solution = []Solution{}
 	collection := database.Collection("solutions")
 	sol, err := collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return []Solution{}, err
+	}
+
+	for sol.Next(context.TODO()) {
+		var solution Solution
+		err = sol.Decode(&solution)
+		if err != nil {
+			return []Solution{}, err
+		}
+		solutions = append(solutions, solution)
+	}
+	return solutions, nil
+}
+
+func FindAllSolutions(database *mongo.Database, text string) ([]Solution, error) {
+	var solutions []Solution = []Solution{}
+	collection := database.Collection("solutions")
+
+	opts := options.Find()
+	opts.SetSort(bson.D{{"createdAt", -1}})
+
+	query := bson.M{
+		"$text": bson.M{
+			"$search": text,
+		},
+	}
+
+	sol, err := collection.Find(context.TODO(), query, opts)
 	if err != nil {
 		return []Solution{}, err
 	}

@@ -4,6 +4,7 @@ import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -64,6 +65,24 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) GetAllSolutions(w http.ResponseWriter, r *http.Request) {
 	solutions, err := models.GetAllSolutions(a.MClient)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, solutions)
+	return
+}
+
+func (a *App) FindAllSolutions(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	fmt.Println(body)
+
+	solutions, err := models.FindAllSolutions(a.MClient, "")
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
