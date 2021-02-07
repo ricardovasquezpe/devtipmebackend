@@ -46,6 +46,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/uploadfile", a.uploadFile).Methods("POST")
 
 	a.Router.HandleFunc("/savesolution", a.SaveSolution).Methods("POST")
+	a.Router.HandleFunc("/getsolution/{id}", a.GetSolutionById).Methods("GET")
 }
 
 func (a *App) RunServer() {

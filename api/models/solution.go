@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -65,4 +67,19 @@ func (s *Solution) SaveSolution(database *mongo.Database) (*Solution, error) {
 	}
 
 	return s, nil
+}
+
+func GetSolutionById(database *mongo.Database, id string) (*Solution, error) {
+	solution := &Solution{}
+	collection := database.Collection("solutions")
+
+	docID, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.M{"_id": docID}
+	err := collection.FindOne(context.TODO(), filter).Decode(solution)
+
+	if err != nil {
+		return &Solution{}, err
+	}
+
+	return solution, nil
 }

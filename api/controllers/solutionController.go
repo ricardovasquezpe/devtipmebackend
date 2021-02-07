@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +41,23 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp["solution"] = solutionCreated
+	responses.JSON(w, http.StatusCreated, resp)
+	return
+}
+
+func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
+	var resp = map[string]interface{}{}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	solutionFound, err := models.GetSolutionById(a.MClient, id)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	resp["solution"] = solutionFound
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }
