@@ -61,3 +61,13 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }
+
+func (a *App) GetAllSolutions(w http.ResponseWriter, r *http.Request) {
+	solutions, err := models.GetAllSolutions(a.MClient)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, solutions)
+	return
+}

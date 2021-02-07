@@ -84,3 +84,22 @@ func GetSolutionById(database *mongo.Database, id string) (*Solution, error) {
 
 	return solution, nil
 }
+
+func GetAllSolutions(database *mongo.Database) ([]Solution, error) {
+	var solutions []Solution = []Solution{}
+	collection := database.Collection("solutions")
+	sol, err := collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return []Solution{}, err
+	}
+
+	for sol.Next(context.TODO()) {
+		var solution Solution
+		err = sol.Decode(&solution)
+		if err != nil {
+			return []Solution{}, err
+		}
+		solutions = append(solutions, solution)
+	}
+	return solutions, nil
+}

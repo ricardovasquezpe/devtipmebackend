@@ -47,6 +47,7 @@ func (a *App) initializeRoutes() {
 
 	a.Router.HandleFunc("/solution", a.SaveSolution).Methods("POST")
 	a.Router.HandleFunc("/solution/{id}", a.GetSolutionById).Methods("GET")
+	a.Router.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
 }
 
 func (a *App) RunServer() {
