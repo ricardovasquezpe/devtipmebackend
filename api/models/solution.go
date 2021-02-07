@@ -14,11 +14,11 @@ import (
 )
 
 type Solution struct {
-	Title      string    `json:"title" bson:"title"`
-	RegisterAt time.Time `json:"registerAt" bson:"registerAt"`
-	UpdatedAt  time.Time `json:"updatedAt" bson:"updatedAt"`
-	Tips       int       `json:"tips" bson:"tips"`
-	Content    []Content `json:"content" bson:"content"`
+	ID         primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Title      string             `json:"title" bson:"title"`
+	RegisterAt time.Time          `json:"registerAt" bson:"registerAt"`
+	UpdatedAt  time.Time          `json:"updatedAt" bson:"updatedAt"`
+	Content    []Content          `json:"content" bson:"content"`
 }
 
 type Content struct {
@@ -61,11 +61,12 @@ func (s *Solution) Validate() error {
 
 func (s *Solution) SaveSolution(database *mongo.Database) (*Solution, error) {
 	collection := database.Collection("solutions")
-	_, err := collection.InsertOne(context.TODO(), s)
+	result, err := collection.InsertOne(context.TODO(), s)
 	if err != nil {
 		return &Solution{}, err
 	}
 
+	s.ID = result.InsertedID.(primitive.ObjectID)
 	return s, nil
 }
 
