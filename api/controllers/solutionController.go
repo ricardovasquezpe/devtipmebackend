@@ -80,9 +80,16 @@ func (a *App) FindAllSolutions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(body)
+	var result map[string]interface{}
 
-	solutions, err := models.FindAllSolutions(a.MClient, "")
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	str := fmt.Sprint(result["text"])
+	solutions, err := models.FindAllSolutions(a.MClient, str)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

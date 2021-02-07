@@ -112,11 +112,16 @@ func FindAllSolutions(database *mongo.Database, text string) ([]Solution, error)
 	opts := options.Find()
 	opts.SetSort(bson.D{{"createdAt", -1}})
 
-	query := bson.M{
+	/*query := bson.M{
 		"$text": bson.M{
 			"$search": text,
 		},
-	}
+	}*/
+
+	query := bson.M{"$or": []interface{}{
+		bson.M{"title": bson.M{"$regex": text, "$options": "im"}},
+		bson.M{"content.content": bson.M{"$regex": text, "$options": "im"}},
+	}}
 
 	sol, err := collection.Find(context.TODO(), query, opts)
 	if err != nil {
