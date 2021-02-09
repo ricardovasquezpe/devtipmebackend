@@ -115,7 +115,7 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 	fileName := fmt.Sprint(utils.GetEpochTime())
-	var extension = filepath.Ext(header.Filename)
+	extension := filepath.Ext(header.Filename)
 
 	resp["fileName"], err = a.S3.UploadImage("devtipme", fileName+extension, file)
 	if err != nil {
