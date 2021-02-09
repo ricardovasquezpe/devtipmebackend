@@ -35,7 +35,7 @@ func (s *Solution) Prepare() {
 }
 
 func (s *Solution) Validate() error {
-	if s.Title == "" {
+	if strings.TrimSpace(s.Title) == "" {
 		return errors.New("Title is required")
 	}
 	if s.CreatedAt.IsZero() {
