@@ -108,12 +108,14 @@ func GetAllSolutions(database *mongo.Database) ([]Solution, error) {
 	return solutions, nil
 }
 
-func FindAllSolutions(database *mongo.Database, text string) ([]Solution, error) {
+func FindAllSolutions(database *mongo.Database, text string, limit int64, offset int64) ([]Solution, error) {
 	var solutions []Solution = []Solution{}
 	collection := database.Collection("solutions")
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{"createdAt", -1}})
+	opts.SetLimit(limit)
+	opts.SetSkip(offset)
 
 	/*query := bson.M{
 		"$text": bson.M{

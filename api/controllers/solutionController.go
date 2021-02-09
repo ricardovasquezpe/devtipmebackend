@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -91,7 +92,9 @@ func (a *App) FindAllSolutions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	str := fmt.Sprint(result["text"])
-	solutions, err := models.FindAllSolutions(a.MClient, str)
+	limit, _ := strconv.ParseInt(fmt.Sprint(result["limit"]), 10, 64)
+	offset, _ := strconv.ParseInt(fmt.Sprint(result["offset"]), 10, 64)
+	solutions, err := models.FindAllSolutions(a.MClient, str, limit, offset)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
