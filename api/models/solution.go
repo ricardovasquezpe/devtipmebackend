@@ -25,6 +25,7 @@ type Solution struct {
 type Content struct {
 	Type    int    `json:"type" bson:"type"`
 	Content string `json:"content" bson:"content"`
+	Order   int    `json:"order" bson:"order"`
 }
 
 func (s *Solution) Prepare() {
@@ -51,9 +52,11 @@ func (s *Solution) Validate() error {
 		if element.Type == 0 {
 			return errors.New("Type is required in Content index " + strconv.Itoa(index))
 		}
-
 		if element.Content == "" {
 			return errors.New("Content is required in Content index " + strconv.Itoa(index))
+		}
+		if element.Order == 0 {
+			return errors.New("Order is required in Content index " + strconv.Itoa(index))
 		}
 	}
 
