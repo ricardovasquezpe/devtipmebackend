@@ -3,6 +3,7 @@ package controllers
 import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
+	"devtipmebackend/utils"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -97,6 +98,62 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	responses.JSON(w, http.StatusOK, resp)
+	return
+}
+
+func (a *App) Login(w http.ResponseWriter, r *http.Request) {
+	var resp = map[string]interface{}{"status": "success", "message": "logged in"}
+
+	user := &models.User{}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	user.Prepare()
+
+	err = user.Validate("login")
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	usr, err := user.GetUserByEmail(a.MClient)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if usr == nil {
+		resp["status"] = "failed"
+		resp["message"] = "Login failed, please signup"
+		responses.JSON(w, http.StatusBadRequest, resp)
+		return
+	}
+
+	err = models.CheckPasswordHash(user.Password, usr.Password)
+	if err != nil {
+		resp["status"] = "failed"
+		resp["message"] = "Login failed, please try again"
+		responses.JSON(w, http.StatusForbidden, resp)
+		return
+	}
+
+	token, err := utils.EncodeAuthToken(usr.ID)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	resp["token"] = token
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }

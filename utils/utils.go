@@ -5,9 +5,10 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func EncodeAuthToken(uid uint) (string, error) {
+func EncodeAuthToken(uid primitive.ObjectID) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["userID"] = uid
 	claims["IssuedAt"] = time.Now().Unix()

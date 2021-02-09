@@ -40,6 +40,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/saveuser", a.SaveUser).Methods("POST")
 	a.Router.HandleFunc("/deleteuser/{id}", a.DeleteUser).Methods("DELETE")
 	a.Router.HandleFunc("/updateuser/{id}", a.UpdateUser).Methods("PUT")
+	a.Router.HandleFunc("/user/login", a.Login).Methods("POST")
 
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
 

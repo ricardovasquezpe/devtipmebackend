@@ -15,11 +15,12 @@ import (
 )
 
 type User struct {
-	Email        string `json:"email,omitempty" bson:"email,omitempty"`
-	FirstName    string `json:"firstname,omitempty" bson:"firstname,omitempty"`
-	LastName     string `json:"lastname,omitempty" bson:"lastname,omitempty"`
-	Password     string `json:"password,omitempty" bson:"password,omitempty"`
-	ProfileImage string `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
+	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Email        string             `json:"email,omitempty" bson:"email,omitempty"`
+	FirstName    string             `json:"firstname,omitempty" bson:"firstname,omitempty"`
+	LastName     string             `json:"lastname,omitempty" bson:"lastname,omitempty"`
+	Password     string             `json:"password,omitempty" bson:"password,omitempty"`
+	ProfileImage string             `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -136,4 +137,18 @@ func (u *User) UpdateUser(id string, database *mongo.Database) (*User, error) {
 	}
 
 	return u, nil
+}
+
+func (u *User) GetUserByEmail(database *mongo.Database) (*User, error) {
+	user := &User{}
+	collection := database.Collection("users")
+
+	filter := bson.M{"email": u.Email}
+	err := collection.FindOne(context.TODO(), filter).Decode(user)
+
+	if err != nil {
+		return &User{}, err
+	}
+
+	return user, nil
 }
