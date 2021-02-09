@@ -15,3 +15,7 @@ func EncodeAuthToken(uid uint) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), claims)
 	return token.SignedString([]byte(os.Getenv("SECRET")))
 }
+
+func GetEpochTime() int64 {
+	return time.Now().Unix()
+}

@@ -43,12 +43,11 @@ func (a *App) initializeRoutes() {
 
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
 
-	a.Router.HandleFunc("/uploadfile", a.uploadFile).Methods("POST")
-
 	a.Router.HandleFunc("/solution", a.SaveSolution).Methods("POST")
 	a.Router.HandleFunc("/solution/{id}", a.GetSolutionById).Methods("GET")
 	a.Router.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
 	a.Router.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
+	a.Router.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
 }
 
 func (a *App) RunServer() {

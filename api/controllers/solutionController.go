@@ -3,10 +3,12 @@ package controllers
 import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
+	"devtipmebackend/utils"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gorilla/mux"
 )
@@ -95,5 +97,29 @@ func (a *App) FindAllSolutions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responses.JSON(w, http.StatusOK, solutions)
+	return
+}
+
+func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
+	var resp = map[string]interface{}{"status": "success", "message": "File uploaded successfully"}
+	r.ParseMultipartForm(32 << 20)
+	file, header, err := r.FormFile("file")
+
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	defer file.Close()
+	fileName := fmt.Sprint(utils.GetEpochTime())
+	var extension = filepath.Ext(header.Filename)
+
+	resp["fileName"], err = a.S3.UploadImage("devtipme", fileName+extension, file)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, resp)
 	return
 }

@@ -99,25 +99,3 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }
-
-func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
-	var resp = map[string]interface{}{"status": "success", "message": "File uploaded successfully"}
-	r.ParseMultipartForm(32 << 20)
-	file, header, err := r.FormFile("file")
-
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	defer file.Close()
-
-	resp["fileName"], err = a.S3.UploadImage("devtipme", header.Filename, file)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	responses.JSON(w, http.StatusOK, resp)
-	return
-}
