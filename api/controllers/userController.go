@@ -44,6 +44,7 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user.BeforeSave()
 	userCreated, err := user.SaveUser(a.MClient)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
