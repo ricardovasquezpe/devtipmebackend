@@ -53,6 +53,8 @@ func (a *App) initializeRoutes() {
 	s.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
 
 	s.HandleFunc("/tip", a.SaveTip).Methods("POST")
+
+	s.HandleFunc("/comment", a.SaveComment).Methods("POST")
 }
 
 func (a *App) RunServer() {
