@@ -67,10 +67,14 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	amount, err := models.GetTotalTipBySolutionId(a.MClient, id)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
 
 	resp["solution"] = solutionFound
 	resp["amount"] = amount
-	responses.JSON(w, http.StatusCreated, resp)
+	responses.JSON(w, http.StatusOK, resp)
 	return
 }
 
