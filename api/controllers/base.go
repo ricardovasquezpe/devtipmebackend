@@ -51,6 +51,8 @@ func (a *App) initializeRoutes() {
 	s.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
 	s.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
 	s.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
+
+	s.HandleFunc("/tip", a.SaveTip).Methods("POST")
 }
 
 func (a *App) RunServer() {
