@@ -4,6 +4,7 @@ import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -46,5 +47,17 @@ func (a *App) SaveComment(w http.ResponseWriter, r *http.Request) {
 
 	resp["comment"] = commentCreated
 	responses.JSON(w, http.StatusCreated, resp)
+	return
+}
+
+func (a *App) FindAllComments(w http.ResponseWriter, r *http.Request) {
+	urlParams := r.URL.Query()
+	fmt.Println(urlParams)
+	comments, err := models.FindAllComments(a.MClient, urlParams["solutionId"][0])
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, comments)
 	return
 }

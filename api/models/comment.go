@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -47,4 +48,25 @@ func (c *Comment) SaveComment(database *mongo.Database) (*Comment, error) {
 
 	c.ID = result.InsertedID.(primitive.ObjectID)
 	return c, nil
+}
+
+func FindAllComments(database *mongo.Database, solutionId string) ([]Comment, error) {
+	var comments []Comment = []Comment{}
+	collection := database.Collection("comments")
+	docID, _ := primitive.ObjectIDFromHex(solutionId)
+	query := bson.M{"solutionId": docID}
+	com, err := collection.Find(context.TODO(), query)
+	if err != nil {
+		return []Comment{}, err
+	}
+
+	for com.Next(context.TODO()) {
+		var comment Comment
+		err = com.Decode(&comment)
+		if err != nil {
+			return []Comment{}, err
+		}
+		comments = append(comments, comment)
+	}
+	return comments, nil
 }

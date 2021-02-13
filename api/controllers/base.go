@@ -55,6 +55,7 @@ func (a *App) initializeRoutes() {
 	s.HandleFunc("/tip", a.SaveTip).Methods("POST")
 
 	s.HandleFunc("/comment", a.SaveComment).Methods("POST")
+	s.HandleFunc("/comment/find", a.FindAllComments).Methods("GET")
 }
 
 func (a *App) RunServer() {
