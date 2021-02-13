@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +38,10 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
+
+	user := r.Context().Value("userID").(string)
+	userId, _ := primitive.ObjectIDFromHex(user)
+	solution.UserId = userId
 
 	solutionCreated, err := solution.SaveSolution(a.MClient)
 	if err != nil {

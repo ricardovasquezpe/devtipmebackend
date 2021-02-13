@@ -44,11 +44,13 @@ func (a *App) initializeRoutes() {
 
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
 
-	a.Router.HandleFunc("/solution", a.SaveSolution).Methods("POST")
-	a.Router.HandleFunc("/solution/{id}", a.GetSolutionById).Methods("GET")
-	a.Router.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
-	a.Router.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
-	a.Router.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
+	s := a.Router.PathPrefix("/v1").Subrouter()
+	s.Use(middlewares.AuthJwtVerify)
+	s.HandleFunc("/solution", a.SaveSolution).Methods("POST")
+	s.HandleFunc("/solution/{id}", a.GetSolutionById).Methods("GET")
+	s.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
+	s.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
+	s.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
 }
 
 func (a *App) RunServer() {
@@ -61,6 +63,6 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) setVersionApi(v string) {
-	a.Router = a.Router.PathPrefix("/api/" + v).Subrouter()
+	a.Router = a.Router.PathPrefix("/api").Subrouter()
 	//a.Router.Use(middle.MiddlewareOne)
 }

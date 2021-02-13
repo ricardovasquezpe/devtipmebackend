@@ -20,6 +20,7 @@ type Solution struct {
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`
 	Content   []Content          `json:"content" bson:"content"`
+	UserId    primitive.ObjectID `json:"userId" bson:"userId"`
 }
 
 type Content struct {
