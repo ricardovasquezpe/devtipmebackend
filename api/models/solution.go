@@ -21,6 +21,7 @@ type Solution struct {
 	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`
 	Content   []Content          `json:"content" bson:"content"`
 	UserId    primitive.ObjectID `json:"userId" bson:"userId"`
+	Topics    []string           `json:"topics" bson:"topics"`
 }
 
 type Content struct {
@@ -47,6 +48,9 @@ func (s *Solution) Validate() error {
 	}
 	if len(s.Content) == 0 {
 		return errors.New("Content is required")
+	}
+	if len(s.Topics) == 0 {
+		return errors.New("Topics is required")
 	}
 
 	for index, element := range s.Content {
