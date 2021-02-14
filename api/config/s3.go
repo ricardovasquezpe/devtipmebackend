@@ -39,7 +39,7 @@ func (s3 *S3) ConnectAws() {
 
 func (s3 S3) UploadImage(bucketName string, fileName string, file multipart.File) (string, error) {
 	uploader := s3manager.NewUploader(s3.Session)
-	_, err := uploader.Upload(&s3manager.UploadInput{
+	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucketName),
 		ACL:    aws.String("public-read"),
 		Key:    aws.String(fileName),
@@ -50,6 +50,6 @@ func (s3 S3) UploadImage(bucketName string, fileName string, file multipart.File
 		return "", err
 	}
 
-	filepath := "https://" + bucketName + "." + "s3-" + s3.MyRegion + ".amazonaws.com/" + fileName
-	return filepath, nil
+	//filepath := "https://" + bucketName + "." + "s3-" + s3.MyRegion + ".amazonaws.com/" + fileName
+	return result.Location, nil
 }
