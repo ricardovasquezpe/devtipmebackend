@@ -15,12 +15,12 @@ import (
 )
 
 type User struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Email        string             `json:"email,omitempty" bson:"email,omitempty"`
-	FirstName    string             `json:"firstname,omitempty" bson:"firstname,omitempty"`
-	LastName     string             `json:"lastname,omitempty" bson:"lastname,omitempty"`
-	Password     string             `json:"password,omitempty" bson:"password,omitempty"`
-	ProfileImage string             `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
+	ID    primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Email string             `json:"email,omitempty" bson:"email,omitempty"`
+	Name  string             `json:"name,omitempty" bson:"name,omitempty"`
+	//LastName     string             `json:"lastname,omitempty" bson:"lastname,omitempty"`
+	Password     string `json:"password,omitempty" bson:"password,omitempty"`
+	ProfileImage string `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -48,8 +48,8 @@ func (u *User) BeforeSave() error {
 
 func (u *User) Prepare() {
 	u.Email = strings.TrimSpace(u.Email)
-	u.FirstName = strings.TrimSpace(u.FirstName)
-	u.LastName = strings.TrimSpace(u.LastName)
+	u.Name = strings.TrimSpace(u.Name)
+	//u.LastName = strings.TrimSpace(u.LastName)
 	u.ProfileImage = strings.TrimSpace(u.ProfileImage)
 }
 
@@ -64,12 +64,12 @@ func (u *User) Validate(action string) error {
 		}
 		return nil
 	default:
-		if u.FirstName == "" {
-			return errors.New("FirstName is required")
+		if u.Name == "" {
+			return errors.New("Name is required")
 		}
-		if u.LastName == "" {
+		/*if u.LastName == "" {
 			return errors.New("LastName is required")
-		}
+		}*/
 		if u.Email == "" {
 			return errors.New("Email is required")
 		}
