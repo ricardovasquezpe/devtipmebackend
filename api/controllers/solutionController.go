@@ -103,10 +103,11 @@ func (a *App) FindAllSolutions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	str := fmt.Sprint(result["text"])
+	text := fmt.Sprint(result["text"])
+	topic := fmt.Sprint(result["topic"])
 	limit, _ := strconv.ParseInt(fmt.Sprint(result["limit"]), 10, 64)
 	offset, _ := strconv.ParseInt(fmt.Sprint(result["offset"]), 10, 64)
-	solutions, err := models.FindAllSolutions(a.MClient, str, limit, offset)
+	solutions, err := models.FindAllSolutions(a.MClient, text, limit, offset, topic)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

@@ -113,7 +113,7 @@ func GetAllSolutions(database *mongo.Database) ([]Solution, error) {
 	return solutions, nil
 }
 
-func FindAllSolutions(database *mongo.Database, text string, limit int64, offset int64) ([]Solution, error) {
+func FindAllSolutions(database *mongo.Database, text string, limit int64, offset int64, topic string) ([]Solution, error) {
 	var solutions []Solution = []Solution{}
 	collection := database.Collection("solutions")
 
@@ -128,9 +128,12 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 		},
 	}*/
 
-	query := bson.M{"$or": []interface{}{
-		bson.M{"title": bson.M{"$regex": text, "$options": "im"}},
-		bson.M{"content.content": bson.M{"$regex": text, "$options": "im"}},
+	query := bson.M{"$and": []interface{}{
+		bson.M{"$or": []interface{}{
+			bson.M{"title": bson.M{"$regex": text, "$options": "im"}},
+			bson.M{"content.content": bson.M{"$regex": text, "$options": "im"}},
+		}},
+		bson.M{"topics": bson.M{"$regex": topic, "$options": "im"}},
 	}}
 
 	sol, err := collection.Find(context.TODO(), query, opts)
