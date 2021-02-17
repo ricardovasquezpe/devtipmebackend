@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"net/smtp"
 	"os"
@@ -53,7 +52,6 @@ func parseTemplate(fileName string, data interface{}) (string, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(wd + fileName)
 	t, err := template.ParseFiles(wd + "/api/" + fileName)
 	if err != nil {
 		return "", err

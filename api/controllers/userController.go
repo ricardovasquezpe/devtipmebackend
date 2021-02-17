@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -52,12 +54,14 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subject := "Verify your account"
+	encriptedIdUser, _ := utils.Encrypt([]byte(userCreated.ID.Hex()), os.Getenv("SECRET"))
+	//plaintext, _ := utils.Decrypt(encriptedIdUser, os.Getenv("SECRET"))
+
 	err = a.Mailer.SendEmail(
 		[]string{userCreated.Email},
-		subject,
+		"Verify your account",
 		"templates/template.html",
-		map[string]string{"username": userCreated.Name, "url": "http://www.devoti.me/verifyaccount/fagwawwar"})
+		map[string]string{"username": userCreated.Name, "url": "http://www.devoti.me/verifyaccount/" + encriptedIdUser})
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -165,6 +169,41 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp["token"] = token
+	responses.JSON(w, http.StatusOK, resp)
+	return
+}
+
+func (a *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
+	var resp = map[string]interface{}{"status": "success", "message": "User verify successfully"}
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	idDecrypt, err := utils.Decrypt(id, os.Getenv("SECRET"))
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	user, err := models.GetUserById(a.MClient, idDecrypt)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if user.Status != 0 {
+		resp = map[string]interface{}{"status": "error", "message": "The user was already verified"}
+		responses.JSON(w, http.StatusBadRequest, resp)
+		return
+	}
+
+	user.Status = 1
+	user.UpdatedAt = time.Now()
+	user.UpdateUser(idDecrypt, a.MClient)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }

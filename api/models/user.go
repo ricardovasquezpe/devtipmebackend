@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	_ "fmt"
 
@@ -19,8 +20,11 @@ type User struct {
 	Email string             `json:"email,omitempty" bson:"email,omitempty"`
 	Name  string             `json:"name,omitempty" bson:"name,omitempty"`
 	//LastName     string             `json:"lastname,omitempty" bson:"lastname,omitempty"`
-	Password     string `json:"password,omitempty" bson:"password,omitempty"`
-	ProfileImage string `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
+	Password     string    `json:"password,omitempty" bson:"password,omitempty"`
+	ProfileImage string    `json:"profileimage,omitempty" bson:"profileimage,omitempty"`
+	Status       int       `json:"status" bson:"status"`
+	CreatedAt    time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt" bson:"updatedAt"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -43,6 +47,9 @@ func (u *User) BeforeSave() error {
 		return err
 	}
 	u.Password = string(hashedpassword)
+	u.Status = 0
+	u.CreatedAt = time.Now()
+	u.UpdatedAt = time.Now()
 	return nil
 }
 
@@ -104,10 +111,11 @@ func GetUsers(database *mongo.Database) ([]User, error) {
 
 func (u *User) SaveUser(database *mongo.Database) (*User, error) {
 	collection := database.Collection("users")
-	_, err := collection.InsertOne(context.TODO(), u)
+	result, err := collection.InsertOne(context.TODO(), u)
 	if err != nil {
 		return &User{}, err
 	}
+	u.ID = result.InsertedID.(primitive.ObjectID)
 
 	return u, nil
 }
@@ -144,6 +152,21 @@ func (u *User) GetUserByEmail(database *mongo.Database) (*User, error) {
 	collection := database.Collection("users")
 
 	filter := bson.M{"email": u.Email}
+	err := collection.FindOne(context.TODO(), filter).Decode(user)
+
+	if err != nil {
+		return &User{}, err
+	}
+
+	return user, nil
+}
+
+func GetUserById(database *mongo.Database, id string) (*User, error) {
+	user := &User{}
+	collection := database.Collection("users")
+
+	docID, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.M{"_id": docID}
 	err := collection.FindOne(context.TODO(), filter).Decode(user)
 
 	if err != nil {
