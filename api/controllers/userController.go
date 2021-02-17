@@ -52,9 +52,12 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subject := "Get latest Tech News directly to your inbox"
-	receiver := "ricardo.vasquez.pe@gmail.com"
-	err = a.Mailer.SendEmail([]string{receiver}, subject, "templates/template.html", map[string]string{"username": "Conor"})
+	subject := "Verify your account"
+	err = a.Mailer.SendEmail(
+		[]string{userCreated.Email},
+		subject,
+		"templates/template.html",
+		map[string]string{"username": userCreated.Name, "url": "http://www.devoti.me/verifyaccount/fagwawwar"})
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
