@@ -16,6 +16,7 @@ type App struct {
 	Router  *mux.Router
 	MClient *mongo.Database
 	S3      config.S3
+	Mailer  config.Mailer
 }
 
 func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
@@ -30,6 +31,11 @@ func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
 func (a *App) InitializeS3Bucket(region, accessKeyId, accessKeySecret string) {
 	a.S3 = config.NewS3(accessKeyId, accessKeySecret, region)
 	a.S3.ConnectAws()
+}
+
+func (a *App) InitializeMailer(port, server, email, password string) {
+	a.Mailer = config.NewMailer(port, server, email, password)
+	a.Mailer.SetUpMailer()
 }
 
 func (a *App) initializeRoutes() {

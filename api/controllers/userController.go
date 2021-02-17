@@ -52,6 +52,14 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	subject := "Get latest Tech News directly to your inbox"
+	receiver := "ricardo.vasquez.pe@gmail.com"
+	err = a.Mailer.SendEmail([]string{receiver}, subject, "templates/template.html", map[string]string{"username": "Conor"})
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
 	resp["user"] = userCreated
 	responses.JSON(w, http.StatusCreated, resp)
 	return
