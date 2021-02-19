@@ -54,7 +54,7 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	encriptedIdUser, _ := utils.Encrypt([]byte(userCreated.ID.Hex()), os.Getenv("SECRET"))
+	/*encriptedIdUser, _ := utils.Encrypt([]byte(userCreated.ID.Hex()), os.Getenv("SECRET"))
 	//plaintext, _ := utils.Decrypt(encriptedIdUser, os.Getenv("SECRET"))
 
 	err = a.Mailer.SendEmail(
@@ -65,7 +65,7 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
-	}
+	}*/
 
 	resp["user"] = userCreated
 	responses.JSON(w, http.StatusCreated, resp)
