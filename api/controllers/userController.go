@@ -143,7 +143,7 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 
 	usr, err := user.GetUserByEmail(a.MClient)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 

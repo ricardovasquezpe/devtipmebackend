@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -51,23 +52,29 @@ func (a *App) initializeRoutes() {
 
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
 
+	a.Router.HandleFunc("/solution/{id}", a.GetSolutionById).Methods("GET")
+	a.Router.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
+	a.Router.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
+
+	a.Router.HandleFunc("/comment/find", a.FindAllComments).Methods("GET")
+
 	s := a.Router.PathPrefix("/v1").Subrouter()
 	s.Use(middlewares.AuthJwtVerify)
 	s.HandleFunc("/solution", a.SaveSolution).Methods("POST")
-	s.HandleFunc("/solution/{id}", a.GetSolutionById).Methods("GET")
-	s.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
-	s.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
 	s.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
 
 	s.HandleFunc("/tip", a.SaveTip).Methods("POST")
 
 	s.HandleFunc("/comment", a.SaveComment).Methods("POST")
-	s.HandleFunc("/comment/find", a.FindAllComments).Methods("GET")
 }
 
 func (a *App) RunServer() {
+	header := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"*"})
+
 	log.Printf("\nServer starting on port 5000")
-	log.Fatal(http.ListenAndServe(":5000", a.Router))
+	log.Fatal(http.ListenAndServe(":5000", handlers.CORS(header, methods, origins)(a.Router)))
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
