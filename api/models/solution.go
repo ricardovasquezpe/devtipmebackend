@@ -121,6 +121,7 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 	opts.SetSort(bson.D{{"createdAt", -1}})
 	opts.SetLimit(limit)
 	opts.SetSkip(offset)
+	opts.SetProjection(bson.M{"title": 1, "content": 1, "_id": 1, "createdAt": 1})
 
 	/*query := bson.M{
 		"$text": bson.M{

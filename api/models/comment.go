@@ -57,14 +57,14 @@ func FindAllComments(database *mongo.Database, solutionId string) ([]Comment, er
 	query := bson.M{"solutionId": docID}
 	com, err := collection.Find(context.TODO(), query)
 	if err != nil {
-		return []Comment{}, err
+		return []Comment{}, nil
 	}
 
 	for com.Next(context.TODO()) {
 		var comment Comment
 		err = com.Decode(&comment)
 		if err != nil {
-			return []Comment{}, err
+			return []Comment{}, nil
 		}
 		comments = append(comments, comment)
 	}
