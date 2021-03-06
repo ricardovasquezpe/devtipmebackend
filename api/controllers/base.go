@@ -62,9 +62,7 @@ func (a *App) initializeRoutes() {
 	s.Use(middlewares.AuthJwtVerify)
 	s.HandleFunc("/solution", a.SaveSolution).Methods("POST")
 	s.HandleFunc("/solution/uploadfile", a.uploadFile).Methods("POST")
-
 	s.HandleFunc("/tip", a.SaveTip).Methods("POST")
-
 	s.HandleFunc("/comment", a.SaveComment).Methods("POST")
 }
 
