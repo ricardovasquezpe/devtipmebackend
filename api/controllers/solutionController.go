@@ -72,8 +72,15 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := models.GetUserById(a.MClient, solutionFound.UserId.Hex())
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
 	resp["solution"] = solutionFound
 	resp["amount"] = amount
+	resp["user"] = user
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }
