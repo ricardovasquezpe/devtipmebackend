@@ -70,9 +70,10 @@ func FindAllComments(database *mongo.Database, solutionId string) ([]CommentResp
 	lookupStage := bson.D{{"$lookup", bson.D{{"from", "users"}, {"localField", "userId"}, {"foreignField", "_id"}, {"as", "userData"}}}}
 	unwind := bson.D{{"$unwind", "$userData"}}
 	project := bson.D{{"$project", bson.D{{"userData.password", 0}, {"userData._id", 0}, {"userData.createdAt", 0}, {"userData.updatedAt", 0}, {"userData.status", 0}}}}
+	sort := bson.D{{"$sort", bson.D{{"createdAt", -1}}}}
 
 	opts := options.Aggregate()
-	com, err := collection.Aggregate(context.TODO(), mongo.Pipeline{matchStage, lookupStage, unwind, project}, opts)
+	com, err := collection.Aggregate(context.TODO(), mongo.Pipeline{matchStage, lookupStage, unwind, project, sort}, opts)
 
 	if err != nil {
 		return []CommentResponse{}, nil
