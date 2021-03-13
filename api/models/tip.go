@@ -19,6 +19,7 @@ type Tip struct {
 	UpdatedAt  time.Time          `json:"updatedAt" bson:"updatedAt"`
 	SolutionId primitive.ObjectID `json:"solutionId" bson:"solutionId"`
 	UserId     primitive.ObjectID `json:"userId" bson:"userId"`
+	PaypalId   string             `json:"paypalId" bson:"paypalId"`
 }
 
 func (t *Tip) Prepare() {
