@@ -21,13 +21,13 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 	solution := &models.Solution{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	err = json.Unmarshal(body, &solution)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 	err = solution.Validate()
 
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -45,7 +45,7 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 
 	solutionCreated, err := solution.SaveSolution(a.MClient)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -62,19 +62,19 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 
 	solutionFound, err := models.GetSolutionById(a.MClient, id)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	amount, err := models.GetTotalTipBySolutionId(a.MClient, id)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	user, err := models.GetUserById(a.MClient, solutionFound.UserId.Hex())
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -129,7 +129,7 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("file")
 
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -139,7 +139,7 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	resp["fileName"], err = a.S3.UploadImage("devtipme", fileName+extension, file)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 

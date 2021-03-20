@@ -16,13 +16,13 @@ func (a *App) SaveTip(w http.ResponseWriter, r *http.Request) {
 	tip := &models.Tip{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	err = json.Unmarshal(body, &tip)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -30,7 +30,7 @@ func (a *App) SaveTip(w http.ResponseWriter, r *http.Request) {
 	err = tip.Validate()
 
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (a *App) SaveTip(w http.ResponseWriter, r *http.Request) {
 
 	tipCreated, err := tip.SaveTip(a.MClient)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 

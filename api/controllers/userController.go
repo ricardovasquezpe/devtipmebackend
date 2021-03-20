@@ -118,7 +118,7 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) Login(w http.ResponseWriter, r *http.Request) {
-	var resp = map[string]interface{}{"status": "success", "message": "logged in"}
+	var resp = map[string]interface{}{"status": "success"}
 
 	user := &models.User{}
 	body, err := ioutil.ReadAll(r.Body)
@@ -149,16 +149,16 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 
 	if usr == nil {
 		resp["status"] = "failed"
-		resp["message"] = "Login failed, please signup"
-		responses.JSON(w, http.StatusBadRequest, resp)
+		resp["error"] = "Login failed, please signup"
+		responses.JSON(w, http.StatusOK, resp)
 		return
 	}
 
 	err = models.CheckPasswordHash(user.Password, usr.Password)
 	if err != nil {
 		resp["status"] = "failed"
-		resp["message"] = "Login failed, please try again"
-		responses.JSON(w, http.StatusForbidden, resp)
+		resp["error"] = "Login failed, please try again"
+		responses.JSON(w, http.StatusOK, resp)
 		return
 	}
 

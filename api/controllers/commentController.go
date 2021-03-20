@@ -16,13 +16,13 @@ func (a *App) SaveComment(w http.ResponseWriter, r *http.Request) {
 	comment := &models.Comment{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	err = json.Unmarshal(body, &comment)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -30,7 +30,7 @@ func (a *App) SaveComment(w http.ResponseWriter, r *http.Request) {
 	err = comment.Validate()
 
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 

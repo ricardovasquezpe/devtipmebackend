@@ -15,12 +15,12 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	var body map[string]interface{}
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	if body["orderId"] == nil || body["solutionId"] == nil || body["amount"] == nil{
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -30,13 +30,13 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, err := services.NewClient()
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	err = services.Authorize(accessToken.Token, orderId)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -55,17 +55,17 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	
 	err = tip.Validate()
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	tipCreated, err := tip.SaveTip(a.MClient)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	resp["tip"] = tipCreated
-	responses.JSON(w, http.StatusOK, resp)
+	responses.JSON(w, http.StatusCreated, resp)
 	return
 }
