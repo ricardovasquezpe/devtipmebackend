@@ -27,14 +27,15 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	orderId := body["orderId"].(string)
 	solutionId := body["solutionId"].(string)
 	amount := body["amount"].(float64)
+	amountString := body["amount"].(string)
 
-	accessToken, err := services.NewClient()
+	client, err := services.NewClient()
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
-	err = services.Authorize(accessToken.Token, orderId)
+	err = services.Authorize(client, orderId, amountString)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return

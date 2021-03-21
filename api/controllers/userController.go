@@ -29,13 +29,13 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 	user := &models.User{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
@@ -43,14 +43,14 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 	err = user.Validate("")
 
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
 	user.BeforeSave()
 	userCreated, err := user.SaveUser(a.MClient)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
