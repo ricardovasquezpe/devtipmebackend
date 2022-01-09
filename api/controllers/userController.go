@@ -67,7 +67,9 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}*/
 
-	resp["user"] = userCreated
+	token, err := utils.EncodeAuthToken(userCreated.ID)
+
+	resp["token"] = token
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }

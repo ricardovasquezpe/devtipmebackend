@@ -74,14 +74,14 @@ func (u *User) Validate(action string) error {
 		if u.Name == "" {
 			return errors.New("Name is required")
 		}
-		/*if u.LastName == "" {
-			return errors.New("LastName is required")
-		}*/
 		if u.Email == "" {
 			return errors.New("Email is required")
 		}
 		if u.Password == "" {
 			return errors.New("Password is required")
+		}
+		if len(u.Password) < 6 {
+			return errors.New("Password should be more than 6 characters")
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
 			return errors.New("Invalid Email")

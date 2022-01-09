@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -137,7 +138,7 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 	fileName := fmt.Sprint(utils.GetEpochTime())
 	extension := filepath.Ext(header.Filename)
 
-	resp["fileName"], err = a.S3.UploadImage("devtipme", fileName+extension, file)
+	resp["fileName"], err = a.S3.UploadImage(os.Getenv("AWS_BUCKET_NAME"), fileName+extension, file)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return

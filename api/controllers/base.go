@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -21,11 +22,8 @@ type App struct {
 }
 
 func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
-	//DBURI := fmt.Sprintf("mongodb+srv://%s:%s@%s/%s", DbUser, DbPassword, DbHost, DbName)
-	//a.MClient = GetClient("mongodb://localhost:27017")
-	a.MClient = config.GetDatabase("mongodb+srv://admin:123@cluster0.5iwf2.mongodb.net", DbName)
+	a.MClient = config.GetDatabase(fmt.Sprintf("mongodb+srv://%s:%s@%s", DbUser, DbPassword, DbHost), DbName)
 	a.Router = mux.NewRouter()
-	//a.setVersionApi("v1")
 	a.initializeRoutes()
 }
 
