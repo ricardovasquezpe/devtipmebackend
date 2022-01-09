@@ -2,63 +2,67 @@ package services
 
 import (
 	"fmt"
-	paypalsdk "github.com/netlify/PayPal-Go-SDK"
+	_ "fmt"
+	"os"
+
+	//paypalsdk "github.com/netlify/PayPal-Go-SDK"
+	"github.com/plutov/paypal"
 )
 
-func NewClient() (*paypalsdk.Client, error) {
-	c, err := paypalsdk.NewClient("AaLifL9xZQYOxIeqUVxYTrGIm_bWY1m9KWPKaRt_4PptuQLNZm74V9jLC8ZlKFS53wvP-_7VZm8hm1zz", "EO1666r1TXzBER4yO7BuWhAxYqtz_R9zL-HF1ejsIX7CVPhjCG3aH11vPuLn5ELUgjAXi2frnVrpTMjC", paypalsdk.APIBaseSandBox)
+func NewClient() (*paypal.Client, error) {
+	c, err := paypal.NewClient("AaLifL9xZQYOxIeqUVxYTrGIm_bWY1m9KWPKaRt_4PptuQLNZm74V9jLC8ZlKFS53wvP-_7VZm8hm1zz", "EIN0wM9LOAMp97DN5epav-6Iy59xH2GoK2YeHsaXhKFQFPzMeGg1ADYPTyqrmEBRWlRyAmlKajjIRMBE", paypal.APIBaseSandBox)
 
 	if err != nil {
 		return nil, err
 	}
 
-	/*c.SetLog(os.Stdout)
-	accessToken, err := c.GetAccessToken()
+	c.SetLog(os.Stdout)
+	_, err = c.GetAccessToken()
 
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
 	return c, nil
 }
 
-func Authorize(client *paypalsdk.Client, orderId string, amount string) error {
-	capture, err := client.CaptureOrder(orderId, &paypalsdk.Amount{Total: amount, Currency: "USD"}, true, nil)
+func Authorize(client *paypal.Client, orderId string, amount string) error {
+	capture, err := client.CaptureOrder(orderId, paypal.CaptureOrderRequest{})
 	if err != nil {
 		return err
 	}
 
 	fmt.Print("CAPTURA")
-	fmt.Print(capture.State)
+	fmt.Print(capture.Status)
 
 	return nil
 	/*
-	urlPaypal := "https://api-m.sandbox.paypal.com"
-	url := urlPaypal + "/v2/checkout/orders/" + orderId + "/capture"
+		urlPaypal := "https://api-m.sandbox.paypal.com"
+		url := urlPaypal + "/v2/checkout/orders/" + orderId + "/capture"
 
-	client := &http.Client {}
-	req, err := http.NewRequest("POST", url, nil)
-	if err != nil {
-		return err
-	}
+		client := &http.Client {}
+		req, err := http.NewRequest("POST", url, nil)
+		if err != nil {
+			return err
+		}
 
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer " + accessToken)
+		req.Header.Add("Content-Type", "application/json")
+		req.Header.Add("Authorization", "Bearer " + accessToken)
 
-	res, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	
-	returnedCluster := map[string]interface{}{}
+		res, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+		defer res.Body.Close()
 
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&returnedCluster)
+		returnedCluster := map[string]interface{}{}
 
-	if returnedCluster["status"] != "COMPLETED" {
-		return errors.New(returnedCluster["message"].(string))
-	}
+		decoder := json.NewDecoder(res.Body)
+		err = decoder.Decode(&returnedCluster)
 
-	return nil*/
+		if returnedCluster["status"] != "COMPLETED" {
+			return errors.New(returnedCluster["message"].(string))
+		}
+
+		return nil*/
 }

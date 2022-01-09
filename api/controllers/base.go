@@ -23,9 +23,9 @@ type App struct {
 func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
 	//DBURI := fmt.Sprintf("mongodb+srv://%s:%s@%s/%s", DbUser, DbPassword, DbHost, DbName)
 	//a.MClient = GetClient("mongodb://localhost:27017")
-	a.MClient = config.GetDatabase("mongodb://localhost:27017", DbName)
+	a.MClient = config.GetDatabase("mongodb+srv://admin:123@cluster0.5iwf2.mongodb.net", DbName)
 	a.Router = mux.NewRouter()
-	a.setVersionApi("v1")
+	//a.setVersionApi("v1")
 	a.initializeRoutes()
 }
 
@@ -80,7 +80,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, "Welcome To Ivents")
 }
 
-func (a *App) setVersionApi(v string) {
+/*func (a *App) setVersionApi(v string) {
 	a.Router = a.Router.PathPrefix("/api").Subrouter()
 	//a.Router.Use(middle.MiddlewareOne)
-}
+}*/
