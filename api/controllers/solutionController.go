@@ -50,6 +50,19 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, titleTopic := range solution.Topics {
+		err := models.FindByTitleAndIncrease(a.MClient, titleTopic)
+		if err != nil {
+			topic := &models.Topic{
+				Title: titleTopic,
+				Total: 1,
+			}
+
+			topic.Prepare()
+			topic.SaveTopic(a.MClient)
+		}
+	}
+
 	resp["solution"] = solutionCreated
 	responses.JSON(w, http.StatusCreated, resp)
 	return
@@ -145,5 +158,15 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, resp)
+	return
+}
+
+func (a *App) GetTrandingTopics(w http.ResponseWriter, r *http.Request) {
+	topics, err := models.GetTopicsLimited(a.MClient, 10)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, topics)
 	return
 }

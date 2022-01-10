@@ -54,6 +54,8 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/solution", a.GetAllSolutions).Methods("GET")
 	a.Router.HandleFunc("/solution/find", a.FindAllSolutions).Methods("POST")
 
+	a.Router.HandleFunc("/topic/trending", a.GetTrandingTopics).Methods("GET")
+
 	a.Router.HandleFunc("/comment/find", a.FindAllComments).Methods("GET")
 
 	s := a.Router.PathPrefix("/v1").Subrouter()

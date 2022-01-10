@@ -152,3 +152,9 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 	}
 	return solutions, nil
 }
+
+func GetTrandingTopics(database *mongo.Database) ([]string, error) {
+	var topics []string
+
+	return topics, nil
+}
