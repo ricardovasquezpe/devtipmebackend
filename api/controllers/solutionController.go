@@ -92,6 +92,9 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user.Password = ""
+	user.Email = ""
+
 	resp["solution"] = solutionFound
 	resp["amount"] = amount
 	resp["user"] = user
