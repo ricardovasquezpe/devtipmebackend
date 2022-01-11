@@ -4,6 +4,7 @@ import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -51,6 +52,7 @@ func (a *App) SaveTip(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) GetMyTotalTips(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value("userID").(string)
+	fmt.Println(userId)
 	totalTip, err := models.GetTotalTipByUserId(a.MClient, userId)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

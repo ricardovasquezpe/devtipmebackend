@@ -95,17 +95,17 @@ func GetTotalTipBySolutionId(database *mongo.Database, solutionId string) (float
 
 func GetTotalTipByUserId(database *mongo.Database, userId string) (float64, error) {
 	collection := database.Collection("tips")
-	solID, _ := primitive.ObjectIDFromHex(userId)
+	userIdObj, _ := primitive.ObjectIDFromHex(userId)
 
 	pipeline := []bson.M{
 		{
 			"$group": bson.M{
-				"_id":        "$solutionId",
+				"_id":        "$userIdTipped",
 				"sum_amount": bson.M{"$sum": "$amount"},
 			},
 		},
 		{
-			"$match": bson.M{"_id": solID},
+			"$match": bson.M{"_id": userIdObj},
 		},
 	}
 	opts := options.Aggregate()
