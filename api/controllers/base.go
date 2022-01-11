@@ -65,6 +65,7 @@ func (a *App) initializeRoutes() {
 	s.HandleFunc("/tip", a.SaveTip).Methods("POST")
 	s.HandleFunc("/comment", a.SaveComment).Methods("POST")
 	s.HandleFunc("/paypal/authorize", a.Authorize).Methods("POST")
+	s.HandleFunc("/solution/my", a.GetMySolutions).Methods("GET")
 }
 
 func (a *App) RunServer() {

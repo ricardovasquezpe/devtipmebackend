@@ -170,3 +170,15 @@ func (a *App) GetTrandingTopics(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, topics)
 	return
 }
+
+func (a *App) GetMySolutions(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userID").(string)
+	fmt.Println(userId)
+	solutions, err := models.GetSolutionsByUserId(a.MClient, userId)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, solutions)
+	return
+}

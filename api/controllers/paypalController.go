@@ -26,6 +26,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIdTipped := body["userIdTipped"].(string)
 	orderId := body["orderId"].(string)
 	solutionId := body["solutionId"].(string)
 	amount := body["amount"].(float64)
@@ -51,6 +52,10 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("userID").(string)
 	userId, _ := primitive.ObjectIDFromHex(user)
 	tip.UserId = userId
+
+	userIdTippedObj, _ := primitive.ObjectIDFromHex(userIdTipped)
+	tip.UserIdTipped = userIdTippedObj
+
 	tip.PaypalId = orderId
 	tip.Amount = amount
 

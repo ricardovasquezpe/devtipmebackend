@@ -153,8 +153,27 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 	return solutions, nil
 }
 
-func GetTrandingTopics(database *mongo.Database) ([]string, error) {
-	var topics []string
+func GetSolutionsByUserId(database *mongo.Database, userId string) ([]Solution, error) {
+	var solutions []Solution = []Solution{}
+	collection := database.Collection("solutions")
+	opts := options.Find()
+	opts.SetSort(bson.D{{"createdAt", -1}})
 
-	return topics, nil
+	docID, _ := primitive.ObjectIDFromHex(userId)
+	query := bson.M{"userId": docID}
+
+	sol, err := collection.Find(context.TODO(), query, opts)
+	if err != nil {
+		return []Solution{}, err
+	}
+
+	for sol.Next(context.TODO()) {
+		var solution Solution
+		err = sol.Decode(&solution)
+		if err != nil {
+			return []Solution{}, err
+		}
+		solutions = append(solutions, solution)
+	}
+	return solutions, nil
 }

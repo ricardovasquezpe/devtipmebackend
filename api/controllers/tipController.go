@@ -48,3 +48,14 @@ func (a *App) SaveTip(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }
+
+func (a *App) GetMyTotalTips(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userID").(string)
+	totalTip, err := models.GetTotalTipByUserId(a.MClient, userId)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, totalTip)
+	return
+}
