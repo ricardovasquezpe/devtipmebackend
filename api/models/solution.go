@@ -14,11 +14,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const solutionStatusEnabled int = 1
+const solutionStatusDisabled int = 0
+
 type Solution struct {
 	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Title     string             `json:"title" bson:"title"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`
+	Status    int                `json:"status" bson:"status"`
 	Content   []Content          `json:"content" bson:"content"`
 	UserId    primitive.ObjectID `json:"userId" bson:"userId"`
 	Topics    []string           `json:"topics" bson:"topics"`
@@ -34,6 +38,7 @@ func (s *Solution) Prepare() {
 	s.Title = strings.TrimSpace(s.Title)
 	s.CreatedAt = time.Now()
 	s.UpdatedAt = time.Now()
+	s.Status = solutionStatusEnabled
 }
 
 func (s *Solution) Validate() error {
@@ -135,6 +140,7 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 			bson.M{"content.content": bson.M{"$regex": text, "$options": "im"}},
 		}},
 		bson.M{"topics": bson.M{"$regex": topic, "$options": "im"}},
+		bson.M{"status": solutionStatusEnabled},
 	}}
 
 	sol, err := collection.Find(context.TODO(), query, opts)
