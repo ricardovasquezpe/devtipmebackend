@@ -183,3 +183,19 @@ func GetSolutionsByUserId(database *mongo.Database, userId string) ([]Solution, 
 	}
 	return solutions, nil
 }
+
+func UpdateSolutionStatus(database *mongo.Database, solutionId string, status float64) error {
+	collection := database.Collection("solutions")
+	primitiveId, _ := primitive.ObjectIDFromHex(solutionId)
+	filter := bson.M{"_id": primitiveId}
+	update := bson.M{
+		"$set": bson.M{"status": status, "updatedAt": time.Now()},
+	}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

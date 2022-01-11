@@ -185,3 +185,28 @@ func (a *App) GetMySolutions(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, solutions)
 	return
 }
+
+func (a *App) UpdateSolutionStatus(w http.ResponseWriter, r *http.Request) {
+	var resp = map[string]interface{}{"status": "success", "message": "Solution updated successfully"}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var body map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
+
+	status := body["status"].(float64)
+
+	err = models.UpdateSolutionStatus(a.MClient, id, status)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, resp)
+	return
+}

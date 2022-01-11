@@ -66,6 +66,7 @@ func (a *App) initializeRoutes() {
 	s.HandleFunc("/comment", a.SaveComment).Methods("POST")
 	s.HandleFunc("/paypal/authorize", a.Authorize).Methods("POST")
 	s.HandleFunc("/solution/my", a.GetMySolutions).Methods("GET")
+	s.HandleFunc("/solution/{id}/status", a.UpdateSolutionStatus).Methods("PUT")
 	s.HandleFunc("/tip/my/total", a.GetMyTotalTips).Methods("GET")
 }
 
