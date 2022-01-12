@@ -32,6 +32,8 @@ require (
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/peterh/liner v1.0.1-0.20171122030339-3681c2a91233 // indirect
+	github.com/sendgrid/rest v2.6.6+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.10.4+incompatible // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/smartwalle/pongo2render v1.0.1 // indirect
 	github.com/spf13/afero v1.1.2 // indirect
@@ -40,9 +42,12 @@ require (
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/spf13/viper v1.7.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	github.com/xhit/go-simple-mail/v2 v2.10.0 // indirect
 	go.starlark.net v0.0.0-20190702223751-32f345186213 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/ini.v1 v1.51.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

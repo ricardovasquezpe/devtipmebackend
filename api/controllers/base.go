@@ -15,10 +15,12 @@ import (
 )
 
 type App struct {
-	Router  *mux.Router
-	MClient *mongo.Database
-	S3      config.S3
-	Mailer  config.Mailer
+	Router         *mux.Router
+	MClient        *mongo.Database
+	S3             config.S3
+	Mailer         config.Mailer
+	GoMailer       config.GoMailer
+	SendGridMailer config.SendGridMailer
 }
 
 func (a *App) Initialize(DbHost, DbPort, DbUser, DbName, DbPassword string) {
@@ -32,15 +34,25 @@ func (a *App) InitializeS3Bucket(region, accessKeyId, accessKeySecret string) {
 	a.S3.ConnectAws()
 }
 
-func (a *App) InitializeMailer(port, server, email, password string) {
+/*func (a *App) InitializeMailer(port, server, email, password string) {
 	a.Mailer = config.NewMailer(port, server, email, password)
 	a.Mailer.SetUpMailer()
+}
+
+func (a *App) InitializeGoMailer(port, server, email, password string) {
+	a.GoMailer = config.NewGoMailer(port, server, email, password)
+	a.GoMailer.SetUpGoMailer()
+}*/
+
+func (a *App) InitializeSendgridMailer(email, emailName, apiKey, url, api string) {
+	a.SendGridMailer = config.NewSendGridMailer(email, emailName, apiKey, url, api)
 }
 
 func (a *App) initializeRoutes() {
 	a.Router.Use(middlewares.SetContentTypeMiddleware)
 
 	a.Router.HandleFunc("/", home).Methods("GET")
+	a.Router.HandleFunc("/test", a.TestVerify).Methods("GET")
 
 	a.Router.HandleFunc("/user/getusers", a.GetAllUsers).Methods("GET")
 	a.Router.HandleFunc("/user", a.SaveUser).Methods("POST")

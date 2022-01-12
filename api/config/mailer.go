@@ -30,7 +30,7 @@ func NewMailer(port, server, email, password string) Mailer {
 }
 
 func (m *Mailer) SetUpMailer() {
-	m.Auth = smtp.PlainAuth("", m.Email, m.Password, m.Server)
+	m.Auth = smtp.CRAMMD5Auth(m.Email, m.Password)
 }
 
 func (m Mailer) SendEmail(to []string, subject string, templateName string, items interface{}) error {
@@ -41,7 +41,7 @@ func (m Mailer) SendEmail(to []string, subject string, templateName string, item
 	}
 	body := "To: " + to[0] + "\r\nSubject: " + subject + "\r\n" + mime + "\r\n" + bodyTemplate
 	SMTP := m.Server + ":" + m.Port
-	if err := smtp.SendMail(SMTP, smtp.PlainAuth("", m.Email, m.Password, m.Server), m.Email, to, []byte(body)); err != nil {
+	if err := smtp.SendMail(SMTP, m.Auth, m.Email, to, []byte(body)); err != nil {
 		return err
 	}
 	return nil

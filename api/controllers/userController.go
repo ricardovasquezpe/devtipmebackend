@@ -5,6 +5,7 @@ import (
 	"devtipmebackend/api/responses"
 	"devtipmebackend/utils"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -61,7 +62,8 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		[]string{userCreated.Email},
 		"Verify your account",
 		"templates/template.html",
-		map[string]string{"username": userCreated.Name, "url": "http://www.devoti.me/verifyaccount/" + encriptedIdUser})
+		map[string]string{"username": userCreated.Name, "url": fmt.Sprintf("%s/%s/%s", os.Getenv("SERVER_URL"), "verifyaccount", encriptedIdUser)})
+
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -208,4 +210,30 @@ func (a *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusOK, resp)
 	return
+}
+
+func (a *App) TestVerify(w http.ResponseWriter, r *http.Request) {
+	encriptedIdUser, err := utils.Encrypt([]byte("61dced25383c384beb733db2"), os.Getenv("SECRET"))
+	fmt.Println(encriptedIdUser)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	var data []models.TemplateData = []models.TemplateData{}
+	data = append(data, models.TemplateData{
+		Key:   "name",
+		Value: "Ricardo",
+	})
+	data = append(data, models.TemplateData{
+		Key:   "url",
+		Value: "www.test.com",
+	})
+	err = a.SendGridMailer.SendEmail([]string{"devtipmedeveloper@gmail.com"}, "SubJect Test", "d-52316f68e993473ba040673c6c8149c1", data)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, nil)
 }
