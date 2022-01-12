@@ -52,14 +52,14 @@ func (a *App) initializeRoutes() {
 	a.Router.Use(middlewares.SetContentTypeMiddleware)
 
 	a.Router.HandleFunc("/", home).Methods("GET")
-	a.Router.HandleFunc("/test", a.TestVerify).Methods("GET")
+	//a.Router.HandleFunc("/test", a.TestVerify).Methods("GET")
 
 	a.Router.HandleFunc("/user/getusers", a.GetAllUsers).Methods("GET")
 	a.Router.HandleFunc("/user", a.SaveUser).Methods("POST")
 	a.Router.HandleFunc("/user/{id}", a.DeleteUser).Methods("DELETE")
 	a.Router.HandleFunc("/user/{id}", a.UpdateUser).Methods("PUT")
 	a.Router.HandleFunc("/user/login", a.Login).Methods("POST")
-	a.Router.HandleFunc("/user/verify/{id}", a.VerifyUser).Methods("PUT")
+	a.Router.HandleFunc("/user/verifyme/{id}", a.VerifyUser).Methods("GET")
 
 	a.Router.HandleFunc("/callexternalapi", a.GetExternalData).Methods("GET")
 

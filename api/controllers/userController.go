@@ -55,21 +55,17 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*encriptedIdUser, _ := utils.Encrypt([]byte(userCreated.ID.Hex()), os.Getenv("SECRET"))
-	//plaintext, _ := utils.Decrypt(encriptedIdUser, os.Getenv("SECRET"))
-
-	err = a.Mailer.SendEmail(
-		[]string{userCreated.Email},
-		"Verify your account",
-		"templates/template.html",
-		map[string]string{"username": userCreated.Name, "url": fmt.Sprintf("%s/%s/%s", os.Getenv("SERVER_URL"), "verifyaccount", encriptedIdUser)})
-
+	/*err = sendEmailVerify(a, user.Email, userCreated.ID.Hex())
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusOK, err)
 		return
 	}*/
 
 	token, err := utils.EncodeAuthToken(userCreated.ID)
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
 
 	resp["token"] = token
 	responses.JSON(w, http.StatusCreated, resp)
@@ -202,7 +198,7 @@ func (a *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 
 	user.Status = 1
 	user.UpdatedAt = time.Now()
-	user.UpdateUser(idDecrypt, a.MClient)
+	_, err = user.UpdateUser(idDecrypt, a.MClient)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -212,12 +208,11 @@ func (a *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (a *App) TestVerify(w http.ResponseWriter, r *http.Request) {
-	encriptedIdUser, err := utils.Encrypt([]byte("61dced25383c384beb733db2"), os.Getenv("SECRET"))
-	fmt.Println(encriptedIdUser)
+func sendEmailVerify(a *App, email, id string) error {
+	encriptedIdUser, err := utils.Encrypt([]byte(id), os.Getenv("SECRET"))
+
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	var data []models.TemplateData = []models.TemplateData{}
@@ -225,15 +220,18 @@ func (a *App) TestVerify(w http.ResponseWriter, r *http.Request) {
 		Key:   "name",
 		Value: "Ricardo",
 	})
+
+	url := fmt.Sprintf("%s/verifyme/%s", os.Getenv("SERVER_URL"), encriptedIdUser)
+	//fmt.Println(url)
 	data = append(data, models.TemplateData{
 		Key:   "url",
-		Value: "www.test.com",
+		Value: url,
 	})
+
 	err = a.SendGridMailer.SendEmail([]string{"devtipmedeveloper@gmail.com"}, "SubJect Test", "d-52316f68e993473ba040673c6c8149c1", data)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
+		return err
 	}
 
-	responses.JSON(w, http.StatusOK, nil)
+	return nil
 }
