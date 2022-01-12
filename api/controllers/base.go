@@ -41,6 +41,7 @@ func (a *App) initializeRoutes() {
 	a.Router.Use(middlewares.SetContentTypeMiddleware)
 
 	a.Router.HandleFunc("/", home).Methods("GET")
+
 	a.Router.HandleFunc("/user/getusers", a.GetAllUsers).Methods("GET")
 	a.Router.HandleFunc("/user", a.SaveUser).Methods("POST")
 	a.Router.HandleFunc("/user/{id}", a.DeleteUser).Methods("DELETE")

@@ -72,7 +72,7 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 	var resp = map[string]interface{}{}
 
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id, err := utils.Decrypt(vars["id"], os.Getenv("SECRET"))
 
 	solutionFound, err := models.GetSolutionById(a.MClient, id)
 	if err != nil {
