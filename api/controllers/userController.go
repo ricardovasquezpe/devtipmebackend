@@ -169,6 +169,7 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp["token"] = token
+	resp["name"] = usr.Name
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }
