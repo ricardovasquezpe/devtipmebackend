@@ -111,6 +111,7 @@ func GetUsers(database *mongo.Database) ([]User, error) {
 
 func (u *User) SaveUser(database *mongo.Database) (*User, error) {
 	collection := database.Collection("users")
+
 	result, err := collection.InsertOne(context.TODO(), u)
 	if err != nil {
 		return &User{}, err
