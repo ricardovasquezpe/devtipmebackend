@@ -81,7 +81,7 @@ func (u *User) Validate(action string) error {
 			return errors.New("Password is required")
 		}
 		if len(u.Password) < 6 {
-			return errors.New("Password should be more than 6 characters")
+			return errors.New("Password should have more than 6 characters")
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
 			return errors.New("Invalid Email")
