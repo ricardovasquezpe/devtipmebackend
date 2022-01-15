@@ -5,7 +5,7 @@ import (
 	"devtipmebackend/api/responses"
 	"devtipmebackend/api/services"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -22,7 +22,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if body["orderId"] == nil || body["solutionId"] == nil || body["amount"] == nil {
-		responses.ERROR(w, http.StatusOK, err)
+		responses.ERROR(w, http.StatusOK, errors.New("password incorrect"))
 		return
 	}
 
@@ -30,7 +30,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 	orderId := body["orderId"].(string)
 	solutionId := body["solutionId"].(string)
 	amount := body["amount"].(float64)
-	amountString := fmt.Sprintf("%v", body["amount"].(float64))
+	//amountString := fmt.Sprintf("%v", body["amount"].(float64))
 
 	client, err := services.NewClient()
 	if err != nil {
@@ -38,7 +38,7 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = services.Authorize(client, orderId, amountString)
+	err = services.Authorize(client, orderId)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return

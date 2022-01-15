@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	_ "fmt"
 	"os"
 
@@ -26,14 +25,14 @@ func NewClient() (*paypal.Client, error) {
 	return c, nil
 }
 
-func Authorize(client *paypal.Client, orderId string, amount string) error {
-	capture, err := client.CaptureOrder(orderId, paypal.CaptureOrderRequest{})
+func Authorize(client *paypal.Client, orderId string) error {
+	_, err := client.CaptureOrder(orderId, paypal.CaptureOrderRequest{})
 	if err != nil {
 		return err
 	}
 
-	fmt.Print("CAPTURA")
-	fmt.Print(capture.Status)
+	/*fmt.Print("CAPTURA")
+	fmt.Print(capture.Status)*/
 
 	return nil
 	/*
