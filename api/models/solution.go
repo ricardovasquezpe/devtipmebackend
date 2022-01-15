@@ -179,26 +179,35 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 	return solutions, nil
 }
 
-func GetSolutionsByUserId(database *mongo.Database, userId string) ([]Solution, error) {
-	var solutions []Solution = []Solution{}
+func GetSolutionsByUserId(database *mongo.Database, userId string) ([]SolutionResponse, error) {
+	var solutions []SolutionResponse = []SolutionResponse{}
 	collection := database.Collection("solutions")
 	opts := options.Find()
 	opts.SetSort(bson.D{{"createdAt", -1}})
+	opts.SetProjection(bson.M{"title": 1, "content": 1, "_id": 1, "createdAt": 1})
 
 	docID, _ := primitive.ObjectIDFromHex(userId)
 	query := bson.M{"userId": docID}
 
 	sol, err := collection.Find(context.TODO(), query, opts)
 	if err != nil {
-		return []Solution{}, err
+		return []SolutionResponse{}, err
 	}
 
 	for sol.Next(context.TODO()) {
-		var solution Solution
+		var solution SolutionResponse
 		err = sol.Decode(&solution)
 		if err != nil {
-			return []Solution{}, err
+			return []SolutionResponse{}, err
 		}
+
+		stringEncriptedId, err := utils.Encrypt([]byte(solution.ID.Hex()), os.Getenv("SECRET"))
+		if err != nil {
+			return []SolutionResponse{}, err
+		}
+
+		solution.EncriptedId = &stringEncriptedId
+		solution.ID = primitive.NewObjectID()
 		solutions = append(solutions, solution)
 	}
 	return solutions, nil
