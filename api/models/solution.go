@@ -20,24 +20,24 @@ const solutionStatusEnabled int = 1
 const solutionStatusDisabled int = 0
 
 type Solution struct {
-	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Title     string             `json:"title" bson:"title"`
-	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
-	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`
-	Status    int                `json:"status" bson:"status"`
-	Content   []Content          `json:"content" bson:"content"`
-	UserId    primitive.ObjectID `json:"userId" bson:"userId"`
-	Topics    []string           `json:"topics" bson:"topics"`
+	ID        *primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Title     string              `json:"title" bson:"title"`
+	CreatedAt time.Time           `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time           `json:"updatedAt" bson:"updatedAt"`
+	Status    int                 `json:"status" bson:"status"`
+	Content   []Content           `json:"content" bson:"content"`
+	UserId    *primitive.ObjectID `json:"userId" bson:"userId"`
+	Topics    []string            `json:"topics" bson:"topics"`
 }
 
 type SolutionResponse struct {
-	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Title       string             `json:"title" bson:"title"`
-	CreatedAt   time.Time          `json:"createdAt" bson:"createdAt"`
-	UpdatedAt   time.Time          `json:"updatedAt" bson:"updatedAt"`
-	Status      int                `json:"status" bson:"status"`
-	Content     []Content          `json:"content" bson:"content"`
-	EncriptedId *string            `json:"encriptedId" bson:"encriptedId"`
+	ID          *primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Title       string              `json:"title" bson:"title"`
+	CreatedAt   time.Time           `json:"createdAt" bson:"createdAt"`
+	UpdatedAt   time.Time           `json:"updatedAt" bson:"updatedAt"`
+	Status      *int                `json:"status" bson:"status"`
+	Content     []Content           `json:"content" bson:"content"`
+	EncriptedId *string             `json:"encriptedId" bson:"encriptedId"`
 }
 
 type Content struct {
@@ -92,7 +92,8 @@ func (s *Solution) SaveSolution(database *mongo.Database) (*Solution, error) {
 		return &Solution{}, err
 	}
 
-	s.ID = result.InsertedID.(primitive.ObjectID)
+	idGenerated := result.InsertedID.(primitive.ObjectID)
+	s.ID = &idGenerated
 	return s, nil
 }
 
@@ -107,6 +108,9 @@ func GetSolutionById(database *mongo.Database, id string) (*Solution, error) {
 	if err != nil {
 		return &Solution{}, err
 	}
+
+	solution.ID = nil
+	//solution.UserId = nil
 
 	return solution, nil
 }
@@ -173,7 +177,8 @@ func FindAllSolutions(database *mongo.Database, text string, limit int64, offset
 		}
 
 		solution.EncriptedId = &stringEncriptedId
-		solution.ID = primitive.NewObjectID()
+		solution.ID = nil
+		solution.Status = nil
 		solutions = append(solutions, solution)
 	}
 	return solutions, nil
@@ -207,7 +212,7 @@ func GetSolutionsByUserId(database *mongo.Database, userId string) ([]SolutionRe
 		}
 
 		solution.EncriptedId = &stringEncriptedId
-		solution.ID = primitive.NewObjectID()
+		solution.ID = nil
 		solutions = append(solutions, solution)
 	}
 	return solutions, nil

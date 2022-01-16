@@ -48,7 +48,7 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userId, _ := primitive.ObjectIDFromHex(user)
-	solution.UserId = userId
+	solution.UserId = &userId
 
 	_, err = solution.SaveSolution(a.MClient)
 	if err != nil {
@@ -102,8 +102,10 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	solutionFound.ID = primitive.NewObjectID()
-	solutionFound.UserId = primitive.NewObjectID()
+	//solutionFound.ID = primitive.NewObjectID()
+	//solutionFound.UserId = primitive.NewObjectID()
+
+	solutionFound.UserId = nil
 
 	resp["solution"] = solutionFound
 	resp["amount"] = amount
