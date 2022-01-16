@@ -3,9 +3,11 @@ package controllers
 import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
+	"devtipmebackend/utils"
 	"encoding/json"
-	"io/ioutil"
+	"errors"
 	"net/http"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -13,18 +15,27 @@ import (
 func (a *App) SaveComment(w http.ResponseWriter, r *http.Request) {
 	var resp = map[string]interface{}{"status": "success", "message": "Comment created"}
 
-	comment := &models.Comment{}
-	body, err := ioutil.ReadAll(r.Body)
+	var body map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
-	err = json.Unmarshal(body, &comment)
+	if body["comment"] == nil || body["solutionId"] == nil {
+		responses.ERROR(w, http.StatusOK, errors.New("Missing fields"))
+		return
+	}
+
+	comment := &models.Comment{}
+	solutionId, err := utils.Decrypt(body["solutionId"].(string), os.Getenv("SECRET"))
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
+
+	comment.SolutionId, _ = primitive.ObjectIDFromHex(solutionId)
+	comment.Comment = body["comment"].(string)
 
 	comment.Prepare()
 	err = comment.Validate()
@@ -38,20 +49,27 @@ func (a *App) SaveComment(w http.ResponseWriter, r *http.Request) {
 	userId, _ := primitive.ObjectIDFromHex(user)
 	comment.UserId = userId
 
-	commentCreated, err := comment.SaveComment(a.MClient)
+	_, err = comment.SaveComment(a.MClient)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 
-	resp["comment"] = commentCreated
+	resp["comment"] = comment
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }
 
 func (a *App) FindAllComments(w http.ResponseWriter, r *http.Request) {
 	urlParams := r.URL.Query()
-	comments, err := models.FindAllComments(a.MClient, urlParams["solutionId"][0])
+	solutionIdEncrypted := urlParams["solutionId"][0]
+	solutionId, err := utils.Decrypt(solutionIdEncrypted, os.Getenv("SECRET"))
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
+
+	comments, err := models.FindAllComments(a.MClient, solutionId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

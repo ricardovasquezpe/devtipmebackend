@@ -4,9 +4,11 @@ import (
 	"devtipmebackend/api/models"
 	"devtipmebackend/api/responses"
 	"devtipmebackend/api/services"
+	"devtipmebackend/utils"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -21,14 +23,22 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body["orderId"] == nil || body["solutionId"] == nil || body["amount"] == nil {
-		responses.ERROR(w, http.StatusOK, errors.New("password incorrect"))
+	if body["orderId"] == nil || body["solutionId"] == nil || body["amount"] == nil || body["userIdTipped"] == nil {
+		responses.ERROR(w, http.StatusOK, errors.New("Missing field"))
 		return
 	}
 
-	userIdTipped := body["userIdTipped"].(string)
+	userIdTipped, err := utils.Decrypt(body["userIdTipped"].(string), os.Getenv("SECRET"))
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
+	solutionId, err := utils.Decrypt(body["solutionId"].(string), os.Getenv("SECRET"))
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
 	orderId := body["orderId"].(string)
-	solutionId := body["solutionId"].(string)
 	amount := body["amount"].(float64)
 	//amountString := fmt.Sprintf("%v", body["amount"].(float64))
 
@@ -67,13 +77,13 @@ func (a *App) Authorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tipCreated, err := tip.SaveTip(a.MClient)
+	_, err = tip.SaveTip(a.MClient)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
-	resp["tip"] = tipCreated
+	//resp["tip"] = tipCreated
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }

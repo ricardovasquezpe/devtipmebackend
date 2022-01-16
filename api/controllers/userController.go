@@ -5,6 +5,7 @@ import (
 	"devtipmebackend/api/responses"
 	"devtipmebackend/utils"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -232,6 +233,19 @@ func sendEmailVerify(a *App, email, id string) error {
 	err = a.SendGridMailer.SendEmail([]string{"devtipmedeveloper@gmail.com"}, "SubJect Test", "d-52316f68e993473ba040673c6c8149c1", data)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func validateUserVerified(a *App, userId string) error {
+	user, err := models.GetUserById(a.MClient, userId)
+	if err != nil {
+		return err
+	}
+
+	if user.Status == 0 {
+		return errors.New("User is not verified")
 	}
 
 	return nil

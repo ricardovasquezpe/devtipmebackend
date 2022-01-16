@@ -20,6 +20,11 @@ type Topic struct {
 	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`
 }
 
+type TopicResponse struct {
+	Title string `json:"title" bson:"title"`
+	Total int    `json:"total" bson:"total"`
+}
+
 func (t *Topic) Prepare() {
 	t.CreatedAt = time.Now()
 	t.UpdatedAt = time.Now()
@@ -56,8 +61,8 @@ func FindByTitleAndIncrease(database *mongo.Database, title string) error {
 	return nil
 }
 
-func GetTopicsLimited(database *mongo.Database, limit int64) ([]Topic, error) {
-	var topics []Topic = []Topic{}
+func GetTopicsLimited(database *mongo.Database, limit int64) ([]TopicResponse, error) {
+	var topics []TopicResponse = []TopicResponse{}
 	collection := database.Collection("topics")
 	opts := options.Find()
 	opts.SetLimit(limit)
@@ -65,14 +70,14 @@ func GetTopicsLimited(database *mongo.Database, limit int64) ([]Topic, error) {
 
 	top, err := collection.Find(context.TODO(), bson.M{}, opts)
 	if err != nil {
-		return []Topic{}, err
+		return []TopicResponse{}, err
 	}
 
 	for top.Next(context.TODO()) {
-		var topic Topic
+		var topic TopicResponse
 		err = top.Decode(&topic)
 		if err != nil {
-			return []Topic{}, err
+			return []TopicResponse{}, err
 		}
 		topics = append(topics, topic)
 	}

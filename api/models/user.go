@@ -2,7 +2,9 @@ package models
 
 import (
 	"context"
+	"devtipmebackend/utils"
 	"errors"
+	"os"
 	"strings"
 	"time"
 
@@ -12,8 +14,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
+
+const userStatusEnabled int = 1
+const userStatusDisabled int = 0
 
 type User struct {
 	ID    primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
@@ -25,6 +31,13 @@ type User struct {
 	Status       int       `json:"status" bson:"status"`
 	CreatedAt    time.Time `json:"createdAt" bson:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt" bson:"updatedAt"`
+}
+
+type UserResponse struct {
+	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Email       string             `json:"email,omitempty" bson:"email,omitempty"`
+	Name        string             `json:"name,omitempty" bson:"name,omitempty"`
+	EncriptedId *string            `json:"encriptedId" bson:"encriptedId"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -173,6 +186,32 @@ func GetUserById(database *mongo.Database, id string) (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
+
+	return user, nil
+}
+
+func GetUserByIdExternal(database *mongo.Database, id string) (*UserResponse, error) {
+	user := &UserResponse{}
+	collection := database.Collection("users")
+
+	docID, _ := primitive.ObjectIDFromHex(id)
+	query := bson.M{"_id": docID}
+	opts := options.FindOne()
+	opts.SetProjection(bson.M{"email": 1, "name": 1, "_id": 1})
+
+	err := collection.FindOne(context.TODO(), query, opts).Decode(user)
+
+	if err != nil {
+		return &UserResponse{}, err
+	}
+
+	stringEncriptedId, err := utils.Encrypt([]byte(user.ID.Hex()), os.Getenv("SECRET"))
+	if err != nil {
+		return &UserResponse{}, err
+	}
+
+	user.EncriptedId = &stringEncriptedId
+	user.ID = primitive.NewObjectID()
 
 	return user, nil
 }

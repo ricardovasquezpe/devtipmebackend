@@ -19,6 +19,13 @@ import (
 func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 	var resp = map[string]interface{}{"status": "success", "message": "Solution created"}
 
+	user := r.Context().Value("userID").(string)
+	err := validateUserVerified(a, user)
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
+
 	solution := &models.Solution{}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -40,11 +47,10 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := r.Context().Value("userID").(string)
 	userId, _ := primitive.ObjectIDFromHex(user)
 	solution.UserId = userId
 
-	solutionCreated, err := solution.SaveSolution(a.MClient)
+	_, err = solution.SaveSolution(a.MClient)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
@@ -63,7 +69,7 @@ func (a *App) SaveSolution(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	resp["solution"] = solutionCreated
+	//resp["solution"] = solutionCreated
 	responses.JSON(w, http.StatusCreated, resp)
 	return
 }
@@ -73,6 +79,10 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id, err := utils.Decrypt(vars["id"], os.Getenv("SECRET"))
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
 
 	solutionFound, err := models.GetSolutionById(a.MClient, id)
 	if err != nil {
@@ -86,14 +96,14 @@ func (a *App) GetSolutionById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := models.GetUserById(a.MClient, solutionFound.UserId.Hex())
+	user, err := models.GetUserByIdExternal(a.MClient, solutionFound.UserId.Hex())
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
 	}
 
-	user.Password = ""
-	user.Email = ""
+	solutionFound.ID = primitive.NewObjectID()
+	solutionFound.UserId = primitive.NewObjectID()
 
 	resp["solution"] = solutionFound
 	resp["amount"] = amount
@@ -164,16 +174,6 @@ func (a *App) uploadFile(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (a *App) GetTrandingTopics(w http.ResponseWriter, r *http.Request) {
-	topics, err := models.GetTopicsLimited(a.MClient, 10)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	responses.JSON(w, http.StatusOK, topics)
-	return
-}
-
 func (a *App) GetMySolutions(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value("userID").(string)
 	solutions, err := models.GetSolutionsByUserId(a.MClient, userId)
@@ -189,10 +189,14 @@ func (a *App) UpdateSolutionStatus(w http.ResponseWriter, r *http.Request) {
 	var resp = map[string]interface{}{"status": "success", "message": "Solution updated successfully"}
 
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id, err := utils.Decrypt(vars["id"], os.Getenv("SECRET"))
+	if err != nil {
+		responses.ERROR(w, http.StatusOK, err)
+		return
+	}
 
 	var body map[string]interface{}
-	err := json.NewDecoder(r.Body).Decode(&body)
+	err = json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return

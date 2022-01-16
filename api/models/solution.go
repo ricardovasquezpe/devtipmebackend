@@ -37,7 +37,7 @@ type SolutionResponse struct {
 	UpdatedAt   time.Time          `json:"updatedAt" bson:"updatedAt"`
 	Status      int                `json:"status" bson:"status"`
 	Content     []Content          `json:"content" bson:"content"`
-	EncriptedId *string            `json:"encriptedId" bson:"topics"`
+	EncriptedId *string            `json:"encriptedId" bson:"encriptedId"`
 }
 
 type Content struct {
@@ -184,7 +184,7 @@ func GetSolutionsByUserId(database *mongo.Database, userId string) ([]SolutionRe
 	collection := database.Collection("solutions")
 	opts := options.Find()
 	opts.SetSort(bson.D{{"createdAt", -1}})
-	opts.SetProjection(bson.M{"title": 1, "content": 1, "_id": 1, "createdAt": 1})
+	opts.SetProjection(bson.M{"title": 1, "content": 1, "_id": 1, "createdAt": 1, "status": 1})
 
 	docID, _ := primitive.ObjectIDFromHex(userId)
 	query := bson.M{"userId": docID}
