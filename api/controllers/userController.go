@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -57,11 +58,11 @@ func (a *App) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*err = sendEmailVerify(a, user.Email, userCreated.ID.Hex())
+	err = sendEmailVerify(a, user.Email, userCreated.ID.Hex())
 	if err != nil {
 		responses.ERROR(w, http.StatusOK, err)
 		return
-	}*/
+	}
 
 	token, err := utils.EncodeAuthToken(userCreated.ID)
 	if err != nil {
@@ -224,9 +225,9 @@ func sendEmailVerify(a *App, email, id string) error {
 		Value: "Ricardo",
 	})
 
-	url := fmt.Sprintf("%s/verifyme/%s", os.Getenv("SERVER_URL"), encriptedIdUser)
-	//fmt.Println(url)
-	data = append(data, models.TemplateData{
+	url := fmt.Sprintf("%s/verify?code=%s", os.Getenv("SERVER_URL"), url.QueryEscape(encriptedIdUser))
+	fmt.Println(url)
+	/*data = append(data, models.TemplateData{
 		Key:   "url",
 		Value: url,
 	})
@@ -234,7 +235,7 @@ func sendEmailVerify(a *App, email, id string) error {
 	err = a.SendGridMailer.SendEmail([]string{"devtipmedeveloper@gmail.com"}, "SubJect Test", "d-52316f68e993473ba040673c6c8149c1", data)
 	if err != nil {
 		return err
-	}
+	}*/
 
 	return nil
 }
