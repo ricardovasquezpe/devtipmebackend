@@ -220,22 +220,22 @@ func sendEmailVerify(a *App, email, id string) error {
 	}
 
 	var data []models.TemplateData = []models.TemplateData{}
-	data = append(data, models.TemplateData{
+	/*data = append(data, models.TemplateData{
 		Key:   "name",
 		Value: "Ricardo",
-	})
+	})*/
 
 	url := fmt.Sprintf("%s/verify?code=%s", os.Getenv("SERVER_URL"), url.QueryEscape(encriptedIdUser))
 	fmt.Println(url)
-	/*data = append(data, models.TemplateData{
+	data = append(data, models.TemplateData{
 		Key:   "url",
 		Value: url,
 	})
 
-	err = a.SendGridMailer.SendEmail([]string{"devtipmedeveloper@gmail.com"}, "SubJect Test", "d-52316f68e993473ba040673c6c8149c1", data)
+	err = a.SendGridMailer.SendEmail([]string{email}, "Thanks to join NextSolution!", os.Getenv("SENDGRID_DYNAMIC_TEMPLATE_ID"), data)
 	if err != nil {
 		return err
-	}*/
+	}
 
 	return nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func NewClient() (*paypal.Client, error) {
-	c, err := paypal.NewClient("AaLifL9xZQYOxIeqUVxYTrGIm_bWY1m9KWPKaRt_4PptuQLNZm74V9jLC8ZlKFS53wvP-_7VZm8hm1zz", "EIN0wM9LOAMp97DN5epav-6Iy59xH2GoK2YeHsaXhKFQFPzMeGg1ADYPTyqrmEBRWlRyAmlKajjIRMBE", paypal.APIBaseSandBox)
+	c, err := paypal.NewClient(os.Getenv("PAYPAL_CLIENT_ID_PRODUCTION"), os.Getenv("PAYPAL_SECRET_PRODUCTION"), paypal.APIBaseLive)
 
 	if err != nil {
 		return nil, err
